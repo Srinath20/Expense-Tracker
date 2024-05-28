@@ -32,12 +32,11 @@ function addNewExpensetoUI(expense) {
 
 function editExpense(expenseId) {
     const expenseElem = document.getElementById(`expense-${expenseId}`);
-    const [amount, category, description] = expenseElem.textContent.split(' - ');
-
+    const expenseText = expenseElem.textContent.trim();
+    const [amount, category, description] = expenseText.split(' - ').map(item => item.trim());
     document.querySelector('input[name="expenseamount"]').value = amount;
     document.querySelector('input[name="description"]').value = description;
     document.querySelector('select[name="category"]').value = category.toLowerCase();
-
     deleteExpense(expenseId, true);
 }
 
@@ -49,7 +48,7 @@ function deleteExpense(expenseId, isEdit = false) {
 function removeExpensefromUI(expenseId, isEdit) {
     const expenseElemId = `expense-${expenseId}`;
     const expenseElem = document.getElementById(expenseElemId);
-    const [amount] = expenseElem.textContent.split(' - ');
+    const [amount] = expenseElem.textContent.split(' - ').map(item => item.trim());
 
     expenseElem.remove();
 
@@ -74,7 +73,7 @@ function removeExpenseFromLocalStorage(expenseId) {
 function updateTotalAmount() {
     totalAmount = Array.from(document.getElementById('listOfExpenses').children)
         .reduce((sum, expense) => {
-            const [amount] = expense.textContent.split(' - ');
+            const [amount] = expense.textContent.split(' - ').map(item => item.trim());
             return sum + parseFloat(amount);
         }, 0);
     document.getElementById('totalAmount').innerText = totalAmount.toFixed(2);
