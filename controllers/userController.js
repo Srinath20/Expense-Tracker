@@ -1,5 +1,4 @@
 const mysql = require('mysql2');
-const bcrypt = require('bcrypt');
 
 const db = mysql.createConnection({
   host: 'localhost',
@@ -15,14 +14,17 @@ db.connect(err => {
 
 exports.signupUser = (req, res) => {
   const { name, email, password } = req.body;
-
-  // Hash the password before storing it
-  bcrypt.hash(password, 10, (err, hash) => {
+  const checkEmailSql = 'SELECT * FROM users WHERE email = ?';
+  db.query(checkEmailSql, [email], (err, results) => {
     if (err) throw err;
-    const sql = 'INSERT INTO users (name, email, password) VALUES (?, ?, ?)';
-    db.query(sql, [name, email, hash], (err, result) => {
-      if (err) throw err;
-      res.json({ id: result.insertId, name, email });
-    });
+    if (results.length > 0) {
+      return res.status(400).json({ error: 'Email already taken' });
+    } else {
+      const sql = 'INSERT INTO users (name, email, password) VALUES (?, ?, ?)';
+      db.query(sql, [name, email, password], (err, result) => {
+        if (err) throw err;
+        res.json({ id: result.insertId, name, email });
+      });
+    }
   });
 };
