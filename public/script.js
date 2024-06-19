@@ -25,3 +25,27 @@ function signup() {
       }
     });
 }
+
+function login() {
+  const email = document.getElementById('email').value;
+  const password = document.getElementById('password').value;
+  const errorMessageDiv = document.getElementById('errorMessage');
+
+  if (!email || !password) {
+    errorMessageDiv.textContent = 'Please fill in all fields';
+    return;
+  }
+
+  axios.post('http://localhost:3000/api/expenses/user/login', { email, password })
+    .then(response => {
+      alert('Login successful!');
+    })
+    .catch(error => {
+      if (error.response && error.response.data && error.response.data.error) {
+        errorMessageDiv.textContent = error.response.data.error;
+      } else {
+        console.error('Error during login:', error);
+        errorMessageDiv.textContent = 'An error occurred during login. Please try again.';
+      }
+    });
+}

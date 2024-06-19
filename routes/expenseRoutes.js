@@ -9,5 +9,6 @@ router.put('/:id', expenseController.updateExpense);
 router.delete('/:id', expenseController.deleteExpense);
 
 router.post('/user/signup', userController.signupUser);
+router.post('/user/login', userController.loginUser);
 
 module.exports = router;
