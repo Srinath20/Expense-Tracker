@@ -35,13 +35,13 @@ exports.loginUser = (req, res) => {
   db.query(sql, [email], (err, results) => {
     if (err) throw err;
     if (results.length === 0) {
-      return res.status(404).json({ error: 'Email not found. Please signup if new user.' });
+      return res.status(404).json({ error: 'User not found.' });
     } else {
       const user = results[0];
       if (user.password === password) {
         res.json({ id: user.id, name: user.name, email: user.email });
       } else {
-        res.status(400).json({ error: 'Wrong password entered, please check' });
+        res.status(400).json({ error: 'User not authorized' });
       }
     }
   });
