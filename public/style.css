@@ -53,6 +53,40 @@ button:hover {
   background-color: #45a049;
 }
 
+
+#expensesList {
+  list-style: none;
+  padding: 0;
+  max-width: 500px;
+  margin: 0 auto;
+}
+
+.expense {
+  background-color: #fff;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  padding: 10px;
+  margin-bottom: 10px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.expense button {
+  margin-left: 10px;
+  padding: 5px 10px;
+  border: none;
+  border-radius: 4px;
+  background-color: #f44336;
+  color: white;
+  cursor: pointer;
+}
+
+.expense button:hover {
+  background-color: #e53935;
+}
+
 p {
   text-align: center;
 }
@@ -65,3 +99,4 @@ a {
 a:hover {
   text-decoration: underline;
 }
+
