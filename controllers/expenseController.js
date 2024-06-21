@@ -13,8 +13,14 @@ db.connect(err => {
 });
 
 exports.getAllExpenses = (req, res) => {
-  const sql = 'SELECT * FROM expenses';
-  db.query(sql, (err, results) => {
+  const userId = req.session.userId;
+
+  if (!userId) {
+    return res.status(401).json({ error: 'User not authenticated' });
+  }
+
+  const sql = 'SELECT * FROM expenses WHERE user_id = ?';
+  db.query(sql, [userId], (err, results) => {
     if (err) throw err;
     res.json(results);
   });
@@ -22,10 +28,16 @@ exports.getAllExpenses = (req, res) => {
 
 exports.createExpense = (req, res) => {
   const { amount, description, category } = req.body;
-  const sql = 'INSERT INTO expenses (amount, description, category) VALUES (?, ?, ?)';
-  db.query(sql, [amount, description, category], (err, result) => {
+  const userId = req.session.userId;
+
+  if (!userId) {
+    return res.status(401).json({ error: 'User not authenticated' });
+  }
+
+  const sql = 'INSERT INTO expenses (amount, description, category, user_id) VALUES (?, ?, ?, ?)';
+  db.query(sql, [amount, description, category, userId], (err, result) => {
     if (err) throw err;
-    res.json({ id: result.insertId, amount, description, category });
+    res.json({ id: result.insertId, amount, description, category, user_id: userId });
   });
 };
 

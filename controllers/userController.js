@@ -51,6 +51,8 @@ exports.loginUser = (req, res) => {
       const match = await bcrypt.compare(password, user.password);
       
       if (match) {
+        req.session.userId = user.id;
+        req.session.userName = user.name;
         res.json({ id: user.id, name: user.name, email: user.email });
       } else {
         res.status(400).json({ error: 'User not authorized' });
