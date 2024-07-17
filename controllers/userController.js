@@ -40,6 +40,7 @@ exports.signupUser = async (req, res) => {
 
 exports.loginUser = (req, res) => {
   const { email, password } = req.body;
+  console.log(email+"  "+ password);
   const sql = 'SELECT * FROM users WHERE email = ?';
   
   db.query(sql, [email], async (err, results) => {
@@ -49,14 +50,15 @@ exports.loginUser = (req, res) => {
     } else {
       const user = results[0];
       const match = await bcrypt.compare(password, user.password);
-      
-      if (match) {
-        req.session.userId = user.id;
+      console.log(match+"Matched");
+      //Sending email and name as userId in req.
+  //    if (match) {
+      /*   req.session.userId = user.id;
         req.session.userName = user.name;
-        res.json({ id: user.id, name: user.name, email: user.email });
-      } else {
-        res.status(400).json({ error: 'User not authorized' });
-      }
+        res.json({ id: user.id, name: user.name, email: user.email }); */
+        
+ //     } else res.status(400).json({ error: 'User not authorized' });
+      
     }
   });
 };

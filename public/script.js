@@ -2,6 +2,10 @@ const apiUrl = 'http://localhost:3000/api/expenses';
 
 document.addEventListener('DOMContentLoaded', fetchExpenses);
 
+const amount = document.getElementById('amount').value;
+const description = document.getElementById('description').value;
+const category = document.getElementById('category').value;
+
 function addExpense() {
   const amount = document.getElementById('amount').value;
   const description = document.getElementById('description').value;
@@ -21,6 +25,38 @@ function addExpense() {
     })
     .catch(error => console.error('Error adding expense:', error));
 }
+document.getElementById('rzp-button1').onclick = async function(e){
+  const token = localStorage.getItem('token');
+
+  const response = await axios.get('http://localhost:3000/purchase/premiummembership',{headers :{"Authorization":token}})//Making a request to backend and also telling which user is trying to create
+  console.log(response); // Once order is created in razorpay,...we get a response
+  var options = 
+  {
+    "key":response.data.key_id, //Enter the key generated from dashboard
+    "order_id": response.data.order.id, //For one time payment
+    //This handler function will handle sucess payment
+    "handler":async function(response){
+      await axios.post('http://localhost:300/purchase/updatetransactionsstatus',{
+        order_id:options.order_id,
+        payment_id:response.razorpay_payment_id,
+      },{headers:{"Authorization": token}})
+      console.log(order);
+      alert("You are a premium user now");
+    },
+  };
+ const rzp1 = new Razorpay(options);
+ rzp1.open(); //Screen gets open due to this
+ e.preventDefault();
+
+ rzp1.on('payment.failed',function(response) {
+console.log(response);
+alert("Something went wrong");
+ });
+}
+
+
+
+
 
 function fetchExpenses() {
   axios.get(apiUrl)

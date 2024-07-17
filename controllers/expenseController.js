@@ -14,7 +14,7 @@ db.connect(err => {
 
 exports.getAllExpenses = (req, res) => {
   const userId = req.session.userId;
-
+  console.log(userId);
   if (!userId) {
     return res.status(401).json({ error: 'User not authenticated' });
   }
