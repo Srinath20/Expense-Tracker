@@ -10,7 +10,7 @@ const db = mysql.createConnection({
 
 db.connect(err => {
   if (err) throw err;
-  console.log('Connected to the database.');
+  console.log('Connected to the database from userController.');
 });
 
 exports.signupUser = async (req, res) => {
@@ -40,7 +40,7 @@ exports.signupUser = async (req, res) => {
 
 exports.loginUser = (req, res) => {
   const { email, password } = req.body;
-  console.log(email+"  "+ password);
+ // console.log(email+"  "+ password);
   const sql = 'SELECT * FROM users WHERE email = ?';
   
   db.query(sql, [email], async (err, results) => {
@@ -50,15 +50,25 @@ exports.loginUser = (req, res) => {
     } else {
       const user = results[0];
       const match = await bcrypt.compare(password, user.password);
-      console.log(match+"Matched");
+   //   console.log(match+"Matched");
+      
+      // req.session = {}
       //Sending email and name as userId in req.
-  //    if (match) {
-      /*   req.session.userId = user.id;
+      console.log(req.session," userController 57");
+      if (match) {
         req.session.userName = user.name;
-        res.json({ id: user.id, name: user.name, email: user.email }); */
+        req.session.userId = user.id;
+
+      console.log(req.session,"usercontroller line 62");
+ 
+
+        res.json({ id: user.id, name: user.name, email: user.email }); 
         
- //     } else res.status(400).json({ error: 'User not authorized' });
+     } else res.status(400).json({ error: 'User not authorized' });
       
     }
   });
 };
+
+
+

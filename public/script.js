@@ -27,7 +27,7 @@ function addExpense() {
 }
 document.getElementById('rzp-button1').onclick = async function(e){
   const token = localStorage.getItem('token');
-
+  console.log(token);
   const response = await axios.get('http://localhost:3000/purchase/premiummembership',{headers :{"Authorization":token}})//Making a request to backend and also telling which user is trying to create
   console.log(response); // Once order is created in razorpay,...we get a response
   var options = 
@@ -40,6 +40,7 @@ document.getElementById('rzp-button1').onclick = async function(e){
         order_id:options.order_id,
         payment_id:response.razorpay_payment_id,
       },{headers:{"Authorization": token}})
+      alert("You are a premium user now");
       console.log(order);
       alert("You are a premium user now");
     },
@@ -53,11 +54,6 @@ console.log(response);
 alert("Something went wrong");
  });
 }
-
-
-
-
-
 function fetchExpenses() {
   axios.get(apiUrl)
     .then(response => {
@@ -158,6 +154,7 @@ function login() {
     .then(response => {
     //  alert('Login successful!');
       window.location.href = 'expenseTracker.html';
+      
     })
     .catch(error => {
       if (error.response && error.response.data && error.response.data.error) {
