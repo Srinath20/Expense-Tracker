@@ -1,4 +1,5 @@
 const apiUrl = 'http://localhost:3000/api/expenses';
+let payment_status;
 
 document.addEventListener('DOMContentLoaded', fetchExpenses);
 
@@ -33,18 +34,21 @@ p.addEventListener("click",()=>{
       'Content-Type':'application/json'
     },
     body: JSON.stringify({
-      items:[{id:1,quantity:1, priceInRupees:2500000,name:"Buy Preium"}]
+      items:[{id:1,quantity:1, priceInCents:25000,name:"Buy Preium"}]
     })
-  }).then(res =>{
-    // if(res.ok) return "Success";
-    return res.json().then(json => Promise.reject(json));
-  }).then((data)=>{
-    console.log(data);
-    // window.location = url
+  }).then(res =>res.json())
+   .then((data)=>{
+    window.location.href = data.url;
   }).catch(e =>{
-    console.log(e);
+    console.log("Error",e);
   })
 })
+
+
+document.addEventListener('load', ()=>{
+  
+})
+  
 
 
 

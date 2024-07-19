@@ -6,6 +6,7 @@ const session = require('express-session');
 const expenseRoutes = require('./routes/expenseRoutes');
 const { error } = require('console');
 const app = express();
+const mysql = require('mysql');
 require('dotenv').config();
 const stripe = require('stripe')(process.env.STRIPE_PRIVATE_KEY);
 app.use(express.json());
@@ -13,8 +14,19 @@ app.use(bodyParser.json());
 app.use(cors());
 app.use(express.static(path.join(__dirname, 'public')));
 
-const items = [{priceInRupees:2500,name:"Buy Preium"}]
+app.use(session({
+  secret: 'your_secret_key',
+  resave: false,
+  saveUninitialized: true,
+}));
+app.use('/api/expenses', expenseRoutes);
 
+const db = mysql.createConnection({
+  host: 'localhost',
+  user: 'root',
+  password: 'Srinathg99',
+  database: 'expensetracker'
+});
 
 app.post('/purchase/premium',async (req,res)=>{
   try {  
@@ -29,7 +41,7 @@ app.post('/purchase/premium',async (req,res)=>{
             product_data:{
               name:item.name
             },
-            unit_amount:item.priceInRupees
+            unit_amount:item.priceInCents
           },
           quantity:item.quantity
         }
@@ -37,7 +49,6 @@ app.post('/purchase/premium',async (req,res)=>{
       success_url:`${process.env.SERVER_url}/success.html`,
       cancel_url:`${process.env.SERVER_url}/cancel.html`
     })
-    console.log(sess)
     res.json({url:sess.url});
   } catch (e) {
     console.log(e)
@@ -47,13 +58,27 @@ app.post('/purchase/premium',async (req,res)=>{
  
 })
 
-app.use(session({
-  secret: 'your_secret_key',
-  resave: false,
-  saveUninitialized: true,
-}));
+app.post('/premium', async(req, res)=>{
 
-app.use('/api/expenses', expenseRoutes);
+  if(req.body.premium=== 1){
+    const user = req.session.userId;
+    let q = `UPDATE users SET premium = 1 WHERE id = ?`;
+    console.log(user);
+    db.query(q, [user], async (err, results) => {
+      if (err) throw err;
+      if (results.length === 0) {
+        return res.status(404).json({ error: 'Failed updating in db.' });
+      } else {
+        console.log(req.session," app.js 71");
+      }
+    })
+    
+    res.json({message:"You are a premium member"})
+  }
+  else{
+    res.json({mesage:"payment failed"})
+  }  
+})
 
 
 
