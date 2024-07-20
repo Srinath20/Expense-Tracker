@@ -47,12 +47,10 @@ exports.loginUser = (req, res) => {
     if (results.length === 0) {
       return res.status(404).json({ error: 'User not found.' });
     } else {
+      console.log(results,"User controller line 50");
       const user = results[0];
       const match = await bcrypt.compare(password, user.password);
-   //   console.log(match+"Matched");
-      
-      // req.session = {}
-      //Sending email and name as userId in req.
+
       console.log(req.session," userController 57");
       if (match) {
         req.session.userName = user.name;

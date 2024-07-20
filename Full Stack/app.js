@@ -9,6 +9,9 @@ const app = express();
 const mysql = require('mysql');
 require('dotenv').config();
 const stripe = require('stripe')(process.env.STRIPE_PRIVATE_KEY);
+
+
+
 app.use(express.json());
 app.use(bodyParser.json());
 app.use(cors());
@@ -54,31 +57,32 @@ app.post('/purchase/premium',async (req,res)=>{
     console.log(e)
     res.json(e);
   }
-// console.log(session.url); undefined
- 
 })
-
-app.post('/premium', async(req, res)=>{
-
-  if(req.body.premium=== 1){
+app.post('/premium', async (req, res) => {
+  console.log(req.body.premium, "app.js line 60");
+  if (req.body.premium === 1) {
     const user = req.session.userId;
+    if (!user) {
+      return res.status(401).json({ error: 'User not authenticated' });
+    }
+    console.log(user, "app.js line 61");
     let q = `UPDATE users SET premium = 1 WHERE id = ?`;
-    console.log(user);
-    db.query(q, [user], async (err, results) => {
-      if (err) throw err;
-      if (results.length === 0) {
-        return res.status(404).json({ error: 'Failed updating in db.' });
-      } else {
-        console.log(req.session," app.js 71");
+    db.query(q, [user], (err, results) => {
+      if (err) {
+        console.error('Error updating premium status:', err);
+        return res.status(500).json({ error: 'Failed to update premium status' });
       }
-    })
-    
-    res.json({message:"You are a premium member"})
+      if (results.affectedRows === 0) {
+        return res.status(404).json({ error: 'User not found' });
+      } else {
+        console.log(req.session, "app.js line 69");
+        res.json({ message: 'Premium status updated successfully' });
+      }
+    });
+  } else {
+    res.json({ message: "Payment failed" });
   }
-  else{
-    res.json({mesage:"payment failed"})
-  }  
-})
+});
 
 
 
