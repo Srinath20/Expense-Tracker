@@ -22,8 +22,8 @@ exports.signupUser = async (req, res) => {
       return res.status(400).json({ error: 'Email already taken' });
     } else {
       try {
-        const saltRounds = 10;
-        const hashedPassword = await bcrypt.hash(password, saltRounds);
+        const saltRounds = 10;//This defines the number of rounds to use when generating a salt. The salt is a random value added to the password before hashing to ensure that even identical passwords will have different hashes.
+        const hashedPassword = await bcrypt.hash(password, saltRounds);//This line hashes the password
         const sql = 'INSERT INTO users (name, email, password) VALUES (?, ?, ?)';
         
         db.query(sql, [name, email, hashedPassword], (err, result) => {
@@ -39,7 +39,6 @@ exports.signupUser = async (req, res) => {
 
 exports.loginUser = (req, res) => {
   const { email, password } = req.body;
- // console.log(email+"  "+ password);
   const sql = 'SELECT * FROM users WHERE email = ?';
   
   db.query(sql, [email], async (err, results) => {

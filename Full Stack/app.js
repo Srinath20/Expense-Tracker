@@ -12,15 +12,15 @@ const stripe = require('stripe')(process.env.STRIPE_PRIVATE_KEY);
 
 
 
-app.use(express.json());
-app.use(bodyParser.json());
+app.use(express.json());//parses incoming requests with JSON payloads /*When a client sends a request with a Content-Type: application/json header, express.json() will parse the JSON payload and make it available on req.body. */
+app.use(bodyParser.json());// same as express.json() but this comes from body-parser package.
 app.use(cors());
 app.use(express.static(path.join(__dirname, 'public')));
-
-app.use(session({
-  secret: 'your_secret_key',
-  resave: false,
-  saveUninitialized: true,
+//The middleware attaches a session object to the req object, which can be used to store and retrieve session data.
+app.use(session({  //allows to store information about the user's session on the server-side.
+  secret: 'your_secret_key', //to sign the session ID cookie.
+  resave: false, //whether the session should be saved back to the session store even if it wasn't modified during the request. Here it means that the session will not be saved if it hasn't changed.
+  saveUninitialized: true, //controls whether a session that is new but not modified should be saved to the session store.
 }));
 app.use('/api/expenses', expenseRoutes);
 
@@ -37,7 +37,6 @@ app.post('/purchase/premium',async (req,res)=>{
       payment_method_types:['card'],
       mode:'payment',
       line_items:req.body.items.map(item =>{
-        // const storeItem = items[item]
         return{
           price_data:{
             currency:'INR',
