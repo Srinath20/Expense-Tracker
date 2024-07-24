@@ -1,26 +1,16 @@
 const apiUrl = 'http://localhost:3000/api/expenses';
 document.addEventListener('DOMContentLoaded', fetchExpenses);
-let mess = document.getElementById('premiumWelcome');
-//document.addEventListener('DOMContentLoaded',checkPremium);
-const amount = document.getElementById('amount').value;
-const description = document.getElementById('description').value;
-const category = document.getElementById('category').value;
 
 async function checkPremium(){
   try {
     let ue = localStorage.getItem('Useremail');
     let response = await axios.post(`${apiUrl}/checkPremium`, { email: ue });
     if (response.data && response.data.name) {
-      console.log("line 13");
-      console.log(response.data);
       document.getElementById('premiumWelcome').innerText = `Welcome ${response.data.name}. You are a premium user now.`;
+    } else {
+      document.getElementById('premiumWelcome').innerText = `Welcome ${ue}.`;
     }
-    else {
-      console.log("else line 17");
-        document.getElementById('premiumWelcome').innerText = `Welcome ${ue}.`;
-      }
-  }
-   catch (error) {
+  } catch (error) {
     console.log('Error checking premium status:', error);
   }
 }
@@ -44,24 +34,24 @@ function addExpense() {
     })
     .catch(error => console.error('Error adding expense:', error));
 }
+
 const p = document.getElementById('rzp-button1');
-p.addEventListener("click",()=>{
-  fetch('http://localhost:3000/purchase/premium',{
-    method:'POST',
-    headers:{
-      'Content-Type':'application/json'
+p.addEventListener("click", () => {
+  fetch('http://localhost:3000/purchase/premium', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
     },
     body: JSON.stringify({
-      items:[{id:1,quantity:1, priceInCents:25000,name:"Buy Preium"}]
+      items: [{ id: 1, quantity: 1, priceInCents: 25000, name: "Buy Premium" }]
     })
-  }).then(res =>res.json())
-   .then((data)=>{
-    window.location.href = data.url;
-  }).catch(e =>{
-    console.log("Error",e);
-  })
-})
-
+  }).then(res => res.json())
+    .then((data) => {
+      window.location.href = data.url;
+    }).catch(e => {
+      console.log("Error", e);
+    })
+});
 
 function fetchExpenses() {
   axios.get(apiUrl)
@@ -119,62 +109,4 @@ function deleteExpense(button) {
       li.remove();
     })
     .catch(error => console.error('Error deleting expense:', error));
-}
-
-function signup() {
-  const name = document.getElementById('name').value;
-  const email = document.getElementById('email').value;
-  const password = document.getElementById('password').value;
-  const errorMessageDiv = document.getElementById('errorMessage');
-
-  if (!name || !email || !password) {
-    errorMessageDiv.textContent = 'Please fill in all fields';
-    return;
-  }
-
-  const user = { name, email, password };
-
-  axios.post('http://localhost:3000/api/expenses/user/signup', user)
-    .then(response => {
-      alert('Signup successful!');
-      window.location.href = 'login.html';
-    })
-    .catch(error => {
-      if (error.response && error.response.data && error.response.data.error) {
-        errorMessageDiv.textContent = error.response.data.error;
-      } else {
-        console.error('Error during signup:', error);
-        errorMessageDiv.textContent = 'An error occurred during signup. Please try again.';
-      }
-    });
-}
-
-async function login() {
-  const email = document.getElementById('email').value;
-  console.log(email,"script.js line 155");
-  const password = document.getElementById('password').value;
-  const errorMessageDiv = document.getElementById('errorMessage');
-
-  if (!email || !password) {
-    errorMessageDiv.textContent = 'Please fill in all fields';
-    return;
-  }
-
-await axios.post('http://localhost:3000/api/expenses/user/login', { email, password })
-      .then((res)=>{
-        let useremail = res.data.email;
-        
-        localStorage.setItem('Useremail', useremail);
-        
-        window.location.href = 'expenseTracker.html';
-       
-    })
-    .catch(error => {
-      if (error.response && error.response.data && error.response.data.error) {
-        errorMessageDiv.textContent = error.response.data.error;
-      } else {
-        console.error('Error during login:', error);
-        errorMessageDiv.textContent = 'An error occurred during login. Please try again.';
-      }
-    });
 }

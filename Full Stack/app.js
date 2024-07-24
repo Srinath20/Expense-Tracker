@@ -22,13 +22,32 @@ app.use(session({  //allows to store information about the user's session on the
   resave: false, //whether the session should be saved back to the session store even if it wasn't modified during the request. Here it means that the session will not be saved if it hasn't changed.
   saveUninitialized: true, //controls whether a session that is new but not modified should be saved to the session store.
 }));
-app.use('/api/expenses', expenseRoutes);
 
 const db = mysql.createConnection({
   host: 'localhost',
   user: 'root',
   password: 'Srinathg99',
   database: 'expensetracker'
+});
+app.use('/api/expenses', expenseRoutes);
+
+
+app.post('/api/expenses/checkPremium', (req, res) => {
+  let q = 'SELECT name FROM users WHERE premium = 1 AND email = ?';
+  console.log(req.body);
+  let e = req.body.email;
+  console.log(e);
+  db.query(q, e, (err, results) => {
+    if (err) {
+      console.log(err);
+      return res.status(500).json({ error: 'Database error app.js line 43' });
+    } else if (results.length === 0) {
+      return res.status(404).json({ error: 'User not a premium member.' });
+    } else {
+      let userName = results[0].name;
+      return res.json({ name: userName });
+    }
+  });
 });
 
 app.post('/purchase/premium',async (req,res)=>{
@@ -59,6 +78,7 @@ app.post('/purchase/premium',async (req,res)=>{
 })
 app.post('/premium', async (req, res) => {
   console.log(req.body.premium, "app.js line 60");
+  console.log("app.js line 64");
   if (req.body.premium === 1) {
     const user = req.session.userId;
     if (!user) {
@@ -75,7 +95,7 @@ app.post('/premium', async (req, res) => {
         return res.status(404).json({ error: 'User not found' });
       } else {
         console.log(req.session, "app.js line 69");
-        res.json({ message: 'Premium status updated successfully' });
+        res.json({ message: 'Premium status updated successfully'});
       }
     });
   } else {

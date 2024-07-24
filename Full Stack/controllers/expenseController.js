@@ -14,12 +14,10 @@ db.connect(err => {
 
 exports.getAllExpenses = (req, res) => {
   const username = req.session.userName;
-  console.log(" expenseController line 17");
   if (!username) {
     return res.status(401).json({ error: 'User not authenticated' });
   }
   const userId = req.session.userId;
-  console.log(" expenseController line 22");
   const sql = 'SELECT * FROM expenses WHERE user_id = ?';
   db.query(sql, [userId], (err, results) => {
     if (err) throw err;
